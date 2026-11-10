@@ -1,0 +1,33 @@
+---
+- name: Instalar a ferramenta de backup Restic
+  apt:
+    name: restic
+    state: present
+
+- name: Criar a diretoria para o repositório de backups locais
+  file:
+    path: /var/backups/restic_repo
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: Criar script de automatização de backup do PostgreSQL
+  copy:
+    dest: /usr/local/bin/backup_postgres.sh
+    mode: '0700'
+    content: |
+      #!/usr/bin/env bash
+      export RESTIC_REPOSITORY="/var/backups/restic_repo"
+      export RESTIC_PASSWORD="ChaveMestraDeCifragemDoRestic123!"
+
+      # Inicializa o repositório se ainda não existir
+      if ! restic cat config > /dev/null 2>&1; then
+          restic init
+      fi
+
+      # Efetua o dump da base de dados e envia diretamente encriptado para o Restic
+      pg_dump -U postgres openproject | restic backup --stdin --stdin-filename openproject_db.sql
+
+      # Aplica política de retenção (mantém os últimos 7 backups)
+      restic forget --keep-last 7 --prune

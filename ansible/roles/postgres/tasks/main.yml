@@ -1,0 +1,58 @@
+---
+- name: Instalar o PostgreSQL, ferramentas e pacote ACL
+  apt:
+    name:
+      - postgresql
+      - postgresql-contrib
+      - python3-psycopg2 # Necessário para os módulos postgresql_* do Ansible
+      - acl
+    state: present
+
+- name: Garantir que o PostgreSQL está a rodar e ativo no arranque
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: Configurar o PostgreSQL para escutar no IP da interface privada (R02)
+  lineinfile:
+    path: /etc/postgresql/14/main/postgresql.conf # Nota: no Ubuntu 22.04 a versão padrão é a 14
+    regexp: "^#?listen_addresses\\s*="
+    line: "listen_addresses = 'localhost,192.168.56.20'"
+  notify: Restart Postgres
+
+- name: Configurar a política de acesso pg_hba.conf para aceitar apenas a VM 1 (R02 + RGPD)
+  blockinfile:
+    path: /etc/postgresql/14/main/pg_hba.conf
+    block: |
+      # Permite conexões encriptadas (hostssl) apenas da VM 1 para a BD openproject
+      hostssl openproject openproject_user 192.168.56.10/32 scram-sha-256
+      # Permite conexões padrão da VM 1 caso SSL seja opcional durante os testes iniciais
+      host    openproject openproject_user 192.168.56.10/32 scram-sha-256
+  notify: Restart Postgres
+
+- name: Criar a base de dados para o OpenProject
+  become: yes
+  become_user: postgres
+  postgresql_db:
+    name: openproject
+    state: present
+
+- name: Criar o utilizador da base de dados com password segura
+  become: yes
+  become_user: postgres
+  postgresql_user:
+    user: openproject_user
+    password: "PasswordSuperSeguraOpenProject123!" # Em produção usam-se Ansible Vault / Variáveis
+    state: present
+
+- name: Atribuir privilégios na base de dados ao utilizador do OpenProject
+  become: yes
+  become_user: postgres
+  postgresql_privs:
+    login_db: openproject
+    type: database
+    objs: openproject
+    roles: openproject_user
+    privs: ALL
+    state: present

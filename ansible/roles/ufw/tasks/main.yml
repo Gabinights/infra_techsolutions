@@ -1,0 +1,48 @@
+---
+- name: Definir política padrão do UFW para REJEITAR tráfego de entrada
+  ufw:
+    direction: incoming
+    policy: deny
+
+- name: Definir política padrão do UFW para PERMITIR tráfego de saída
+  ufw:
+    direction: outgoing
+    policy: allow
+
+- name: Permitir tráfego SSH (Porta 22) em todas as VMs
+  ufw:
+    rule: allow
+    port: '22'
+    proto: tcp
+
+# ----------------------------------------------------
+# Regras Específicas para a VM 1 (Servidor de Aplicação)
+# ----------------------------------------------------
+- name: "[VM1] Permitir tráfego HTTP (Porta 80)"
+  ufw:
+    rule: allow
+    port: '80'
+    proto: tcp
+  when: inventory_hostname == 'vm1-app'
+
+- name: "[VM1] Permitir tráfego HTTPS (Porta 443)"
+  ufw:
+    rule: allow
+    port: '443'
+    proto: tcp
+  when: inventory_hostname == 'vm1-app'
+
+# ----------------------------------------------------
+# Regras Específicas para a VM 2 (Servidor de Base de Dados)
+# ----------------------------------------------------
+- name: "[VM2] Permitir ligações PostgreSQL (Porta 5432) EXCLUSIVAMENTE da VM 1 (R02)"
+  ufw:
+    rule: allow
+    from_ip: '192.168.56.10'
+    port: '5432'
+    proto: tcp
+  when: inventory_hostname == 'vm2-db'
+
+- name: Ativar a firewall UFW
+  ufw:
+    state: enabled

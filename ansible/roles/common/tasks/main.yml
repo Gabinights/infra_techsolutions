@@ -1,0 +1,35 @@
+---
+- name: Atualizar a cache do APT e instalar pacotes base
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+    name:
+      - curl
+      - wget
+      - git
+      - htop
+      - ufw
+      - net-tools
+    state: present
+
+- name: Garantir que o serviço SSH está a ser executado
+  service:
+    name: ssh
+    state: started
+    enabled: yes
+
+- name: Desativar a autenticação por password no SSH (R04)
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PasswordAuthentication'
+    line: 'PasswordAuthentication no'
+    state: present
+  notify: Restart SSH
+
+- name: Desativar login de root via SSH (R04)
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PermitRootLogin'
+    line: 'PermitRootLogin no'
+    state: present
+  notify: Restart SSH

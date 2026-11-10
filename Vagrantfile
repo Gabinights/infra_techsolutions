@@ -36,8 +36,8 @@ Vagrant.configure("2") do |config|
 
   # Aprovisionamento automatizado com Ansible
   config.vm.provision "ansible" do |ansible|
+    ansible.compatibility_mode = "2.0"
     ansible.playbook = "ansible/site.yml"
     ansible.inventory_path = "ansible/inventory"
-    ansible.raw_arguments = ["-i", "ansible/inventory"]
   end
 end
