@@ -1,0 +1,24 @@
+---
+# Configuração global comum (atualizar pacotes, instalar ferramentas base)
+- name: Configuração Base em Todas as VMs
+  hosts: all
+  become: yes
+  roles:
+    - common
+    - ufw
+
+# Configurações específicas da VM 1
+- name: Aprovisionar Servidor de Aplicação (VM 1)
+  hosts: app_servers
+  become: yes
+  roles:
+    - docker
+    - nginx
+
+# Configurações específicas da VM 2
+- name: Aprovisionar Servidor de Base de Dados (VM 2)
+  hosts: db_servers
+  become: yes
+  roles:
+    - postgres
+    - restic
