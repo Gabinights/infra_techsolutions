@@ -1,0 +1,6 @@
+---
+- name: Testar instalação do Docker na VM1
+  hosts: app_servers
+  become: true
+  roles:
+    - docker
