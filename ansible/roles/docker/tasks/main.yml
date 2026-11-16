@@ -1,0 +1,53 @@
+---
+# Instalação do Docker Engine na VM1
+
+- name: Instalar dependências necessárias
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - python3-debian
+    state: present
+    update_cache: true
+
+- name: Criar diretório para chaves APT
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Transferir chave oficial do Docker
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: '0644'
+
+- name: Adicionar repositório oficial do Docker
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb [arch={{ docker_arch }} signed-by=/etc/apt/keyrings/docker.asc]
+      https://download.docker.com/linux/ubuntu
+      {{ ansible_facts['distribution_release'] }} stable
+    filename: docker
+    state: present
+    update_cache: true
+  vars:
+    docker_arch: >-
+      {{ {'x86_64': 'amd64', 'aarch64': 'arm64'}
+         .get(ansible_facts['architecture'], ansible_facts['architecture']) }}
+
+- name: Instalar Docker Engine e Docker Compose
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+
+- name: Iniciar e ativar o Docker
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+    enabled: true
