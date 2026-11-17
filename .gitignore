@@ -1,0 +1,11 @@
+# Diretória interna do Vagrant (contém chaves privadas SSH e IDs das VMs)
+.vagrant/
+
+# Ficheiros de log e discos virtuais
+*.log
+*.vdi
+*.vmdk
+*.ova
+
+# Ficheiros temporários do Ansible
+*.retry
