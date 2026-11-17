@@ -12,7 +12,8 @@
 *.pem
 *.key
 .env
+.vault_pass
 ansible/group_vars/all/vault.yml
 
 # Ficheiros temporários do Ansible
-*.retry.vault_pass
+*.retry
