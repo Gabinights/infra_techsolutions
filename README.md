@@ -109,6 +109,7 @@ vagrant destroy -f
 
 ```text
 .
+├── .gitignore                # Ficheiros que não devem ser versionados 
 ├── Vagrantfile               # Definição das VMs, recursos e orquestração
 ├── README.md                 # Documentação do projeto
 └── ansible/                  # Automação de Infraestrutura como Código (IaC)
