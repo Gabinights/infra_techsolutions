@@ -39,5 +39,7 @@ Vagrant.configure("2") do |config|
     ansible.compatibility_mode = "2.0"
     ansible.playbook = "ansible/site.yml"
     ansible.inventory_path = "ansible/inventory"
+    ansible.config_file = "ansible/ansible.cfg"
+    ansible.vault_password_file = ".vault_pass"
   end
 end

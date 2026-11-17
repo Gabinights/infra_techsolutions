@@ -35,24 +35,24 @@
   become: yes
   become_user: postgres
   postgresql_db:
-    name: openproject
+    name: "{{ db_name }}"
     state: present
 
 - name: Criar o utilizador da base de dados com password segura
   become: yes
   become_user: postgres
   postgresql_user:
-    user: openproject_user
-    password: "PasswordSuperSeguraOpenProject123!" # Em produção usam-se Ansible Vault / Variáveis
+    user: "{{ db_user }}"
+    password: "{{ db_password }}"
     state: present
 
 - name: Atribuir privilégios na base de dados ao utilizador do OpenProject
   become: yes
   become_user: postgres
   postgresql_privs:
-    login_db: openproject
+    login_db: "{{ db_name }}"
     type: database
-    objs: openproject
-    roles: openproject_user
+    objs: "{{ db_name }}"
+    roles: "{{ db_user }}"
     privs: ALL
     state: present

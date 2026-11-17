@@ -1,0 +1,7 @@
+---
+db_name: "openproject"
+db_user: "openproject_user"
+db_password: "{{ vault_db_password }}"
+
+restic_repo: "/var/backups/restic_repo"
+restic_password: "{{ vault_restic_password }}"

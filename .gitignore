@@ -6,6 +6,13 @@
 *.vdi
 *.vmdk
 *.ova
+*.ovf
+
+# Ficheiros de segredos e variáveis locais
+*.pem
+*.key
+.env
+ansible/group_vars/all/vault.yml
 
 # Ficheiros temporários do Ansible
-*.retry
+*.retry.vault_pass

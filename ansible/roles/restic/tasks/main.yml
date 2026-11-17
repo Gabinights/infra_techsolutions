@@ -18,8 +18,8 @@
     mode: '0700'
     content: |
       #!/usr/bin/env bash
-      export RESTIC_REPOSITORY="/var/backups/restic_repo"
-      export RESTIC_PASSWORD="ChaveMestraDeCifragemDoRestic123!"
+      export RESTIC_REPOSITORY="{{ restic_repo }}"
+      export RESTIC_PASSWORD="{{ restic_password }}"
 
       # Inicializa o repositório se ainda não existir
       if ! restic cat config > /dev/null 2>&1; then
