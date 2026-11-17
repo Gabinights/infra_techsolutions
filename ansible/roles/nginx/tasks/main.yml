@@ -1,2 +1,52 @@
 ---
-# Tarefas de configuração do Nginx serão adicionadas posteriormente.
+- name: Instalar Nginx e OpenSSL
+  ansible.builtin.apt:
+    name:
+      - nginx
+      - openssl
+    state: present
+    update_cache: true
+
+- name: Gerar certificado SSL auto-assinado para HTTPS (TechSolutions)
+  ansible.builtin.command:
+    cmd: >
+      openssl req -x509 -nodes -days 365 -newkey rsa:2048
+      -keyout /etc/ssl/private/techsolutions.key
+      -out /etc/ssl/certs/techsolutions.crt
+      -subj "/C=PT/ST=VilaReal/L=VilaReal/O=TechSolutions/CN=192.168.56.10"
+    creates: /etc/ssl/certs/techsolutions.crt
+
+- name: Proteger permissões da chave privada SSL
+  ansible.builtin.file:
+    path: /etc/ssl/private/techsolutions.key
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Copiar configuração Reverse Proxy do OpenProject
+  ansible.builtin.template:
+    src: openproject.conf.j2
+    dest: /etc/nginx/sites-available/openproject.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reiniciar Nginx
+
+- name: Ativar site do OpenProject no Nginx
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/openproject.conf
+    dest: /etc/nginx/sites-enabled/openproject.conf
+    state: link
+  notify: Reiniciar Nginx
+
+- name: Remover site default do Nginx
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Reiniciar Nginx
+
+- name: Garantir que o serviço Nginx está ativo e a correr
+  ansible.builtin.systemd:
+    name: nginx
+    state: started
+    enabled: true
