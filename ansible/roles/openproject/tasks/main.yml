@@ -1,0 +1,31 @@
+---
+- name: Criar diretório /opt/openproject na VM1
+  ansible.builtin.file:
+    path: /opt/openproject
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Copiar ficheiros do OpenProject (compose e proxy) para a VM1
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../docker/openproject/"
+    dest: /opt/openproject/
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Gerar ficheiro .env seguro a partir do Ansible Vault
+  ansible.builtin.template:
+    src: openproject.env.j2
+    dest: /opt/openproject/.env
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Subir os contentores do OpenProject com Docker Compose
+  ansible.builtin.command:
+    cmd: docker compose up -d --build
+    chdir: /opt/openproject
+  register: compose_output
+  changed_when: "'Started' in compose_output.stderr or 'Created' in compose_output.stderr"

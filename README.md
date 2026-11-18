@@ -10,9 +10,9 @@ O projeto simula um ambiente de suporte à gestão de projetos recorrendo a virt
 
 | ID | Requisito Técnico | Estado |
 |---|---|---|
-| R01 | Plataforma OpenProject via HTTP/HTTPS centralizada por Nginx Reverse Proxy. | 🔄 Em curso |
+| R01 | Plataforma OpenProject via HTTP/HTTPS centralizada por Nginx Reverse Proxy. | ✅ Concluído |
 | R02 | Isolamento da BD PostgreSQL na VM 2, aceitando ligações apenas da VM 1 (IP 192.168.56.10). | ✅ Concluído |
-| R03 | Persistência de dados através de volumes Docker mapeados no host. | 🔄 Em curso |
+| R03 | Persistência de dados através de volumes Docker mapeados no host. | ✅ Concluído |
 | R04 | Acesso remoto SSH restrito a chaves públicas com desativação de passwords e root. | ✅ Concluído |
 | R05 | Regras estritas de Firewall (UFW) em ambas as VMs (política deny incoming). | ✅ Concluído |
 | R06 | Monitorização de conectividade e serviços em tempo real via Uptime Kuma. | 🔄 Em curso |

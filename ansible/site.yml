@@ -13,6 +13,7 @@
   become: yes
   roles:
     - docker
+    - openproject
     - nginx
 
 # Configurações específicas da VM 2
